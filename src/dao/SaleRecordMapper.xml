@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.SaleRecordMapper">
+
+<insert id="addSaleRecord" parameterType="vo.SaleRecord" flushCache="true">
+
+INSERT INTO salerecord (iid,num,pid,month,day,year) 
+VALUES (#{iid},#{num},#{pid},#{month},#{day},#{year})
+
+</insert>
+
+<update id="modifySaleRecord" parameterType="vo.SaleRecord" flushCache="true">
+
+UPDATE salerecord
+<set>
+	<!--if test="iid != null">
+	iid=#{iid},
+	</if>  -->
+	<if test="num != null and num !='' and num >= 0">
+		num=#{num},
+	</if>
+   <if test="day != null and day != '' and day > 0 and 31 >= day">
+        	day = #{day},
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        	year = #{year},
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        	month = #{month},
+    </if>
+</set>
+ WHERE iid=#{iid} and pid = #{pid};
+
+</update>
+
+<delete id="deleteSaleRecord" parameterType="vo.SaleRecord" flushCache="true">
+
+DELETE FROM salerecord WHERE iid =#{iid} and pid = #{pid};
+
+</delete>
+
+<select id="selectSaleRecord" parameterType="vo.SaleRecord"  resultType="vo.SaleRecord" flushCache="true" >
+
+SELECT * FROM salerecord WHERE iid=#{iid} and pid = #{pid};
+
+</select>
+<select id="querySaleRecord" parameterType="vo.SaleRecord"  resultType="vo.SaleRecord" flushCache="true" >
+
+SELECT * FROM salerecord
+  <where>
+    <if test="num != null and num !='' and num >= 0">
+        AND num = #{num}
+    </if>
+    <if test="iid != null and iid != ''">
+        AND iid = #{iid} 
+    </if>
+	 <if test="pid != null and pid != '' and pid > 0">
+        AND pid = #{pid} 
+    </if>
+    	 <if test="day != null and day != '' and day >0 and 31 >= day">
+        AND day = #{day} 
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        AND year = #{year} 
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        AND month = #{month} 
+    </if>
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countSaleRecord" parameterType="vo.SaleRecord"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM salerecord
+<where>
+    <if test="num != null and num !='' and num >= 0">
+        AND num = #{num}
+    </if>
+    <if test="iid != null and iid != ''">
+        AND iid = #{iid} 
+    </if>
+	 <if test="pid != null and pid != '' and pid > 0">
+        AND pid = #{pid} 
+    </if>
+    	 <if test="day != null and day != '' and day >0 and 31 >= day">
+        AND day = #{day} 
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        AND year = #{year} 
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        AND month = #{month} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

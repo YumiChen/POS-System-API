@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.StockRecordMapper">
+
+<insert id="addStockRecord" parameterType="vo.StockRecord" flushCache="true">
+
+INSERT INTO stockrecord (iid,pid,num,month,day,year,time) 
+VALUES (#{iid},#{pid},#{num},#{month},#{day},#{year},DATE_FORMAT(SYSDATE(), '%H:%i:%s'))
+
+</insert>
+
+<update id="modifyStockRecord" parameterType="vo.StockRecord" flushCache="true">
+
+UPDATE stockrecord
+<set>
+	<if test="num != null and num != '' and num >= 0">
+        num = #{num},
+    </if>
+       <if test="day != null and day != '' and day > 0 and 31 >= day">
+        	day = #{day},
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        	year = #{year},
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        	month = #{month},
+    </if>
+    <if test="time != null and time != ''">
+			time=#{time},
+	</if>
+</set>
+ WHERE iid=#{iid} AND pid = #{pid};
+
+</update>
+
+<delete id="deleteStockRecord" parameterType="vo.StockRecord" flushCache="true">
+
+DELETE FROM stockrecord WHERE iid=#{iid} AND pid = #{pid};
+
+</delete>
+
+<select id="selectStockRecord" parameterType="vo.StockRecord"  resultType="vo.StockRecord" flushCache="true" >
+
+SELECT * FROM stockrecord WHERE iid=#{iid} AND pid = #{pid};
+
+</select>
+<select id="queryStockRecord" parameterType="vo.StockRecord"  resultType="vo.StockRecord" flushCache="true" >
+
+SELECT * FROM stockrecord
+  <where>
+    <if test="iid != null and iid !=''">
+        AND iid = #{iid}
+    </if>
+    <if test="pid > 0 and pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="num >= 0 and num != null and num != ''">
+        AND num = #{num}
+    </if>
+       <if test="day != null and day != '' and day > 0 and 31 >= day">
+        	AND day = #{day}
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        	AND year = #{year}
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        	AND month = #{month}
+    </if>
+	<if test="time != null and time !=''">
+	        AND time = #{time}
+	</if>
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countStockRecord" parameterType="vo.StockRecord"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM stockrecord
+<where>
+    <if test="iid != null and iid !=''">
+        AND iid = #{iid}
+    </if>
+    <if test="pid > 0 and pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="num >= 0 and num != null and num != ''">
+        AND num = #{num}
+    </if>
+       <if test="day != null and day != '' and day > 0 and 31 >= day">
+        	AND day = #{day}
+    </if>
+    <if test="year != null and year != '' and year > 0">
+        	AND year = #{year}
+    </if>
+    <if test="month != null and month != '' and month > 0 and 12 >= month">
+        	AND month = #{month}
+    </if>
+	<if test="time != null and time !=''">
+	        AND time = #{time}
+	</if>
+  </where>
+  
+</select>
+
+</mapper>

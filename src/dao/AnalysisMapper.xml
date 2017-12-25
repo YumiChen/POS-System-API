@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.AnalysisMapper">
+<select id="queryInMonth"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult" >
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month = #{startmonth}
+AND year = #{startyear}
+AND day >= #{startday}
+AND #{endday} >=  day
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+</select>
+
+<!--  
+<select id="countInMonth"  flushCache="true"  parameterType="vo.Analysis" resultType="java.lang.Integer" >
+SELECT count(*)
+FROM sale, item, category, branch
+<where>
+			category.id=item.category
+			AND sale.iid = item.id
+			AND sale.bid = branch.id
+             <if test="startday != '' and startday != null and startday > 0 and 31>= startday ">
+             	AND day >= #{startday}
+              </if>
+              <if test="endday != '' and endday != null and endday > 0 and 31>= endday">
+				AND #{endday} >= day 
+              </if>
+              <if test="startmonth != '' and startmonth != null and startmonth > 0 and 12>= startmonth">
+             	AND month = #{startmonth}
+              </if>
+              <if test="startyear != '' and startyear != null and startyear > 0">
+             	AND year = #{startyear}
+              </if>
+              <if test="bid != '' and bid != null and bid > 0">
+             	AND sale.bid = #{bid}
+             </if>
+</where>
+</select>
+-->
+
+<select id="queryCrossMonth"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult" >
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+        category.id=item.category
+        AND salerecord.iid = item.id
+        AND salerecord.pid = place.id
+        AND month = #{startmonth}
+        AND year = #{startyear}
+        AND day >= #{startday}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month > #{startmonth}
+AND  #{endmonth} > month
+AND year = #{startyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month = #{endmonth}
+AND year = #{startyear}
+AND #{endday} >= day
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+</select>
+
+
+<select id="queryCrossYear"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult" >
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month = #{startmonth}
+AND year = #{startyear}
+AND day >= #{startday}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month > #{startmonth}
+AND year = #{startyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND year > #{startyear}
+AND #{startyear} > year
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND  #{endmonth} > month
+AND year = #{endyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+UNION
+SELECT
+salerecord.year AS year,
+  salerecord.month AS month,
+salerecord.day AS day ,
+salerecord.num AS num,
+  place.name AS placeName,
+category.name AS category,
+  item.name AS itemName,
+  item.price*salerecord.num AS profit
+FROM salerecord, item, category, place
+<where>
+category.id=item.category
+AND salerecord.iid = item.id
+AND salerecord.pid = place.id
+AND month = #{endmonth}
+AND year = #{endyear}
+AND #{endday} >= day
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+</select>
+
+<!--         By Category        -->
+<select id="queryInMonthByCategory"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+SELECT category.name, sum(salerecord.num*item.price) as sales,
+sum(salerecord.num) as num
+FROM salerecord
+INNER JOIN item
+ON item.id = salerecord.iid
+INNER JOIN category
+ON item.category = category.id
+	<where>
+		month = #{startmonth}
+		AND year = #{startyear}
+		AND day >= #{startday}
+		AND #{endday} >=  day
+		<if test="pid != '' and pid != null and pid > 0">
+			AND salerecord.pid = #{pid}
+		</if>
+	</where>
+	GROUP BY item.category
+</select>
+
+<select id="queryCrossMonthByCategory"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+	SELECT a.name, SUM(a.sales) AS sales, SUM(a.num) AS num
+	FROM(
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+	<where>
+        month = #{startmonth}
+        AND year = #{startyear}
+        AND day >= #{startday}
+        <if test="pid != '' and pid != null and pid > 0">
+			AND salerecord.pid = #{pid}
+		</if>
+	</where>
+	GROUP BY item.category
+	
+	UNION
+	
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+	<where>
+	month > #{startmonth}
+	AND  #{endmonth} > month
+	AND year = #{startyear}
+	       <if test="pid != '' and pid != null and pid > 0">
+	             AND salerecord.pid = #{pid}
+	        </if>
+	</where>
+	GROUP BY item.category
+	
+	UNION
+
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+	<where>
+	month = #{endmonth}
+	AND year = #{startyear}
+	AND #{endday} >= day
+	              <if test="pid != '' and pid != null and pid > 0">
+	                 AND salerecord.pid = #{pid}
+	             </if>
+	</where>
+	GROUP BY item.category) AS a
+	
+	GROUP BY a.name
+</select>
+
+<select id="queryCrossYearByCategory"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+	SELECT a.name, SUM(a.sales) AS sales, SUM(a.num) AS num
+	FROM(
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+<where>
+	month = #{startmonth}
+	AND year = #{startyear}
+	AND day >= #{startday}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.category
+
+	UNION
+	
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+<where>
+	month > #{startmonth}
+	AND year = #{startyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.category
+	
+	UNION
+
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+<where>
+	year > #{startyear}
+	AND #{startyear} > year
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.category
+	
+	UNION
+	
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+<where>
+	#{endmonth} > month
+	AND year = #{endyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.category
+
+	UNION
+	
+	SELECT category.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	INNER JOIN category
+	ON item.category = category.id
+<where>
+	month = #{endmonth}
+	AND year = #{endyear}
+	AND #{endday} >= day
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.category) AS a
+	GROUP BY a.name
+</select>
+
+<!--                               By Item                                 -->
+
+<select id="queryInMonthByItem"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	<where>
+		month = #{startmonth}
+		AND year = #{startyear}
+		AND day >= #{startday}
+		AND #{endday} >=  day
+		<if test="pid != '' and pid != null and pid > 0">
+			AND salerecord.pid = #{pid}
+		</if>
+	</where>
+	GROUP BY item.name
+</select>
+
+<select id="queryCrossMonthByItem"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+	SELECT a.name,SUM(a.sales) as sales,SUM(a.num) as num
+	FROM
+	(
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	<where>
+        month = #{startmonth}
+        AND year = #{startyear}
+        AND day >= #{startday}
+        <if test="pid != '' and pid != null and pid > 0">
+			AND salerecord.pid = #{pid}
+		</if>
+	</where>
+	GROUP BY item.name
+	
+	UNION
+	
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	<where>
+	month > #{startmonth}
+	AND  #{endmonth} > month
+	AND year = #{startyear}
+	       <if test="pid != '' and pid != null and pid > 0">
+	             AND salerecord.pid = #{pid}
+	        </if>
+	</where>
+	GROUP BY item.name
+	
+	UNION
+
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+	<where>
+	month = #{endmonth}
+	AND year = #{startyear}
+	AND #{endday} >= day
+	              <if test="pid != '' and pid != null and pid > 0">
+	                 AND salerecord.pid = #{pid}
+	             </if>
+	</where>
+	GROUP BY item.name) AS a
+	
+	GROUP BY a.name
+</select>
+
+<select id="queryCrossYearByItem"  flushCache="true"  parameterType="vo.Analysis" resultType="vo.AnalysisResult_" >
+	SELECT a.name,SUM(a.sales) as sales,SUM(a.num) as num
+	FROM
+	(
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+<where>
+	month = #{startmonth}
+	AND year = #{startyear}
+	AND day >= #{startday}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.name
+
+	UNION
+	
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+<where>
+	month > #{startmonth}
+	AND year = #{startyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.name
+	
+	UNION
+
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+<where>
+	year > #{startyear}
+	AND #{startyear} > year
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.name
+	
+	UNION
+	
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+<where>
+	#{endmonth} > month
+	AND year = #{endyear}
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.name
+
+	UNION
+	
+	SELECT item.name, sum(salerecord.num*item.price) as sales,
+	sum(salerecord.num) as num
+	FROM salerecord
+	INNER JOIN item
+	ON item.id = salerecord.iid
+<where>
+	month = #{endmonth}
+	AND year = #{endyear}
+	AND #{endday} >= day
+              <if test="pid != '' and pid != null and pid > 0">
+                 AND salerecord.pid = #{pid}
+             </if>
+</where>
+	GROUP BY item.name) AS a
+	GROUP BY a.name
+</select>
+
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ItemStockMapper">
+<!--  
+<select id="selectItemStock" parameterType="vo.ItemStock"  resultType="vo.ItemStock" flushCache="true" >
+
+SELECT item.id, item.name,
+ item.menuf, 
+ item.price,
+ category.name as category, 
+ stock.num as stock, 
+ branch.name as bname, branch.id as bid
+ 
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid 
+INNER JOIN branch
+ON stock.bid = branch.id
+INNER JOIN category
+ON item.category = category.id
+
+WHERE stock.iid = #{id}
+AND branch.id = #{bid}
+
+</select>
+-->
+
+<select id="queryItemStock" parameterType="vo.ItemStock"  resultType="vo.ItemStock" flushCache="true" >
+
+SELECT 
+item.id as id,
+item.name, 
+item.menuf, 
+item.price,
+category.name as category, 
+stock.num as stock, 
+place.name as pname, 
+place.id as pid
+
+FROM item
+
+INNER JOIN stock
+ON item.id = stock.iid
+INNER JOIN place
+ON stock.pid = place.id
+INNER JOIN category
+ON item.category = category.id
+  <where>
+        place.type != 1
+    <if test="id != null and id !=''">
+        AND item.id = #{id}
+    </if>
+    <if test="name != null and name !=''">
+        AND item.name = #{name}
+    </if>
+    <if test="menuf != null and menuf != ''">
+        AND menuf = #{menuf}
+    </if>
+    <if test="price != null and price != ''">
+        AND price = #{price}
+    </if>
+    <if test="category != null and category != '' ">
+        AND category.name = #{category}
+    </if>
+     <if test="stock != null and stock != '' and stock >= 0">
+        AND stock.num = #{stock}
+    </if>
+     <if test="pid != null and pid != '' and pid != 0">
+        AND place.id = #{pid}
+    </if>
+    
+  </where>
+  <if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+      LIMIT #{start},#{rowsperpage}
+  </if>
+</select>
+<!--  
+<select id="countItemStock" parameterType="vo.ItemStock"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*)
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid 
+INNER JOIN branch
+ON stock.bid = branch.id
+INNER JOIN category
+ON item.category = category.id
+  <where>
+    <if test="id != null and id !=''">
+        AND item.id = #{id}
+    </if>
+    <if test="name != null and name !=''">
+        AND item.name = #{name}
+    </if>
+    <if test="menuf != null and menuf != ''">
+        AND menuf = #{menuf}
+    </if>
+    <if test="price != null and price != ''">
+        AND price = #{price}
+    </if>
+    <if test="category != null and category != '' ">
+        AND category.name = #{category} 
+    </if>
+     <if test="stock != null and stock != '' and stock >= 0">
+        AND stock.num = #{stock} 
+    </if>
+     <if test="bid != null and bid != '' and bid != 0">
+        AND branch.id = #{bid} 
+    </if>
+    
+  </where>
+    
+</select>
+-->
+
+<select id="searchItemStock" parameterType="vo.ItemStockSearch"  resultType="vo.ItemStock" flushCache="true" >
+
+SELECT item.id as id, item.name, item.menuf, item.price,category.name as category, stock.num as stock, place.name as pname, place.id as pid
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid
+INNER JOIN place
+ON stock.pid = place.id
+INNER JOIN category
+ON item.category = category.id
+  <where>
+    <if test="pid != null and pid != '' and pid != 0">
+        AND place.id = #{pid}
+    </if>
+    <if test="term != null and term != ''">
+    <bind name="term2" value="'%' + term + '%'" />
+        AND (
+        item.id LIKE #{term2}
+        OR item.name LIKE #{term2}
+        OR menuf LIKE #{term2}
+        OR price LIKE #{term2}
+        OR category.name LIKE #{term2}
+        OR stock.num LIKE #{term2}
+        OR place.name LIKE #{term2}
+        )
+    </if>
+  </where>
+     <if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+                     LIMIT #{start},#{rowsperpage}
+     </if>
+</select>
+
+
+</mapper>

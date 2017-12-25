@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ItemMapper">
+
+<insert id="addItem" parameterType="vo.Item" flushCache="true">
+
+INSERT INTO item (id,name,menuf,price,cost,safenum,category)
+SELECT #{id},#{name},#{menuf},#{price},#{cost},#{safenum},category.id
+FROM category
+WHERE category.id = #{category}
+</insert>
+
+<update id="modifyItem" parameterType="vo.Item" flushCache="true">
+
+UPDATE item
+INNER JOIN category 
+ON category.id = item.category 
+<set>
+	<if test="name != null and name != ''">
+        item.name = #{name},
+    </if>
+    <if test="menuf != null and menuf != ''">
+        menuf = #{menuf},
+    </if>
+    <if test="price > 0 and price != null and price != ''">
+        price = #{price},
+    </if>
+    <if test="cost >  0 and cost != null and cost != ''">
+        cost = #{cost},
+    </if>
+    <if test="safenum > 0 and safenum != null and safenum != ''">
+        safenum = #{safenum},
+    </if>
+    <if test="category > 0 and category != null and category != ''">
+        item.category = category.id,
+    </if>
+</set>
+<where>
+	item.id=#{id}
+    <if test="category > 0 and category != null and category != ''">
+        AND category.id = #{category}
+    </if>
+</where>
+
+</update>
+
+<delete id="deleteItem" parameterType="vo.Item" flushCache="true">
+
+DELETE FROM item WHERE id =#{id};
+
+</delete>
+
+<select id="selectItem" parameterType="vo.Item"  resultType="vo.Item" flushCache="true" >
+
+SELECT * FROM item WHERE id=#{id};
+
+</select>
+<select id="queryItem" parameterType="vo.Item"  resultType="vo.Item" flushCache="true" >
+
+SELECT * FROM item
+  <where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+    <if test="menuf != null and menuf !=''">
+    <bind name="menuf2" value="'%' + menuf + '%'" />
+        AND menuf LIKE #{menuf2}
+    </if>
+    <if test="price > 0 and price != null and price != ''">
+        AND price = #{price}
+    </if>
+        <if test="price > 0 and price != null and price != ''">
+        AND price = #{price}
+    </if>
+    <if test="cost >  0 and cost != null and cost != ''">
+        AND cost = #{cost}
+    </if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+    <if test="category > 0 and category != null and category != ''">
+        AND category = #{category}
+    </if>
+  </where>
+  	<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countItem" parameterType="vo.Item"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM item
+<where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+    <if test="menuf != null and menuf !=''">
+    <bind name="menuf2" value="'%' + menuf + '%'" />
+        AND menuf LIKE #{menuf2}
+    </if>
+    <if test="price > 0 and price != null and price != ''">
+        AND price = #{price}
+    </if>
+        <if test="cost >  0 and cost != null and cost != ''">
+        AND cost = #{cost}
+    </if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+    <if test="category > 0 and category != null and category != ''">
+        AND category = #{category}
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

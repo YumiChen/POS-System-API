@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.PlaceMapper">
+
+
+<insert id="addPlace" parameterType="vo.Place" flushCache="true">
+INSERT INTO place(name,addr,phone,owner,type)
+SELECT #{name}, #{addr}, #{phone}, #{owner}, placetype.id
+FROM placetype
+WHERE placetype.id = #{type}
+</insert>
+
+<delete id="deletePlace" parameterType="vo.Place" flushCache="true">
+DELETE FROM place WHERE id =#{id};
+</delete>
+
+<select id="selectPlace" parameterType="vo.Place"  resultType="vo.Place" flushCache="true" >
+SELECT * FROM place WHERE id=#{id};
+</select>
+
+<update id="modifyPlace" parameterType="vo.Place" flushCache="true">
+UPDATE place
+INNER JOIN placetype 
+ON placetype.id = place.type 
+<set>
+	<if test="name != null and name != ''">
+        place.name = #{name},
+    </if>
+    <if test="addr != null and addr != ''">
+        place.addr = #{addr},
+    </if>
+    <if test="phone != null and phone != ''">
+        place.phone = #{phone},
+    </if>
+    <if test="owner != null and owner != ''">
+        place.owner = #{owner},
+    </if>
+    <if test="type > 0 and type != null and type != ''">
+        place.type = placetype.id,
+    </if>
+</set>
+<where>
+	place.id=#{id}
+    <if test="type > 0 and type != null and type != ''">
+        AND placetype.id = #{type}
+    </if>
+</where>
+</update>
+<select id="queryPlace" parameterType="vo.Place"  resultType="vo.Place" flushCache="true" >
+SELECT * FROM place
+  <where>
+    <if test="name != null and name != ''">
+        AND name = #{name}
+    </if>
+    <if test="addr != null and addr != ''">
+        AND addr = #{addr}
+    </if>
+    <if test="phone != null and phone != ''">
+        AND phone = #{phone}
+    </if>
+    <if test="owner != null and owner != ''">
+        AND owner = #{owner}
+    </if>
+    <if test="type > 0 and type != null and type != ''">
+        AND place.type = #{type}
+    </if>
+    <if test="id > 0 and id != null and id != ''">
+        AND place.id =#{id}
+    </if>
+  </where>
+  	<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countPlace" parameterType="vo.Place"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM place
+<where>
+    <if test="name != null and name != ''">
+        AND name = #{name}
+    </if>
+    <if test="addr != null and addr != ''">
+        AND addr = #{addr}
+    </if>
+    <if test="phone != null and phone != ''">
+        AND phone = #{phone}
+    </if>
+    <if test="owner != null and owner != ''">
+        AND owner = #{owner}
+    </if>
+    <if test="type > 0 and type != null and type != ''">
+        AND place.type =#{type}
+    </if>
+    <if test="id > 0 and id != null and id != ''">
+        AND place.id =#{id}
+    </if>
+  </where>
+ 
+</select>
+
+</mapper>

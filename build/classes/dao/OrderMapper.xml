@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.OrderMapper">
+
+<select id="addOrder0" parameterType="vo.Order" resultType="java.lang.String"  flushCache="true">
+
+INSERT INTO `order`(id,senderid,senddate,status,sourceid,requesterid,wishdate,pid,istransfer)
+SELECT CONCAT(#{id}, SUBSTR(REVERSE(UUID_SHORT()), 1,5)),"AA0000",NULL,1,p1.id,u1.id,#{wishdate},p2.id,#{istransfer}
+FROM user u1, place p1, place p2
+WHERE u1.id = #{requesterid}
+AND p1.id = #{sourceid} AND p1.type = 3
+AND p2.id = #{pid} AND p2.type = 2;
+</select>
+
+<select id="addOrder1" parameterType="vo.Order" resultType="java.lang.String" flushCache="true">
+
+INSERT INTO `order`(id,senderid,senddate,status,sourceid,requesterid,wishdate,pid,istransfer)
+SELECT CONCAT(#{id}, SUBSTR(REVERSE(UUID_SHORT()), 1,5)),"AA0000",NULL,1,p1.id,u1.id,#{wishdate},p2.id,#{istransfer}
+FROM user u1, place p1, place p2
+WHERE u1.id = #{requesterid}
+AND p1.id = #{sourceid} AND p1.type = 2
+AND p2.id = #{pid} AND p2.type = 2;
+</select>
+
+<select id="selectId" resultType="java.lang.String"  flushCache="true">
+SELECT order.id FROM `order` ORDER BY order.id DESC LIMIT 1;
+</select>
+
+<update id="modifyOrder0" parameterType="vo.Order" flushCache="true">
+UPDATE `order`
+
+INNER JOIN place AS p1
+ON p1.id = order.sourceid
+
+INNER JOIN place AS p2
+ON p2.id = order.pid
+
+INNER JOIN orderstatus
+ON orderstatus.id = order.status
+
+INNER JOIN user AS u1
+ON u1.id = order.senderid
+
+INNER JOIN user AS u2
+ON u2.id = order.requesterid
+<set>
+	<if test="senderid != null and senderid != ''">
+	order.senderid = u1.id,
+	</if>
+	<if test="senddate != null and senddate != '' ">
+	order.senddate = #{senddate},
+	</if>
+	<if test="status >  0 and status != null and status != '' ">
+	order.status = orderstatus.id,
+	</if>
+	<if test="sourceid != null and sourceid != '' ">
+	order.sourceid = p1.id,
+	</if>
+	<if test="requesterid != null and requesterid != '' ">
+	order.requesterid = u2.id,
+	</if>
+	<if test="wishdate != null and wishdate != '' ">
+	order.wishdate = #{wishdate},
+	</if>
+	<if test="pid >  0 and pid != null and pid != '' ">
+	order.pid = p2.id,
+	</if>
+	<if test="istransfer ==  0 or istransfer==1 and istransfer != null and istransfer != '' ">
+	istransfer=#{istransfer},
+	</if>
+	<if test="valid ==  0 or valid == 1 and valid != null and valid != '' ">
+	valid = #{valid},
+	</if>
+</set>
+<where>
+ 	order.id=#{id}
+ 	<if test="sourceid != null and sourceid != '' ">
+	AND p1.id = #{sourceid} AND p1.type = 3
+	</if>
+	<if test="pid >  0 and pid != null and pid != '' ">
+	AND p2.id = #{pid} AND p2.type = 2
+	</if>
+	<if test="status >  0 and status != null and status != '' ">
+	AND orderstatus.id = #{status}
+	</if>
+	<if test="senderid != null and senderid != ''">
+	AND u1.id = #{senderid}
+	</if>
+	<if test="requesterid != null and requesterid != '' ">
+	AND u2.id = #{requesterid}
+	</if>
+</where>
+</update>
+
+<update id="modifyOrder1" parameterType="vo.Order" flushCache="true">
+UPDATE `order`
+
+INNER JOIN place AS p1
+ON p1.id = order.sourceid
+
+INNER JOIN place AS p2
+ON p2.id = order.pid
+
+INNER JOIN orderstatus
+ON orderstatus.id = order.status
+
+INNER JOIN user AS u1
+ON u1.id = order.senderid
+
+INNER JOIN user AS u2
+ON u2.id = order.requesterid
+<set>
+	<if test="senderid != null and senderid != ''">
+	order.senderid = u1.id,
+	</if>
+	<if test="senddate != null and senddate != '' ">
+	order.sendate = #{senddate},
+	</if>
+	<if test="status >  0 and status != null and status != '' ">
+	order.status = orderstatus.id,
+	</if>
+	<if test="sourceid != null and sourceid != '' ">
+	order.sourceid = p1.id,
+	</if>
+	<if test="requesterid != null and requesterid != '' ">
+	order.requesterid = u2.id,
+	</if>
+	<if test="wishdate != null and wishdate != '' ">
+	order.wishdate = #{wishdate},
+	</if>
+	<if test="pid >  0 and pid != null and pid != '' ">
+	order.pid = p2.id,
+	</if>
+	<if test="istransfer ==  0 or istransfer==1 and istransfer != null and istransfer != '' ">
+	istransfer=#{istransfer},
+	</if>
+	<if test="valid ==  0 or valid == 1 and valid != null and valid != '' ">
+	valid = #{valid},
+	</if>
+</set>
+<where>
+ 	order.id=#{id}
+ 	<if test="sourceid != null and sourceid != '' ">
+	AND p1.id = #{sourceid} AND p1.type = 2
+	</if>
+	<if test="pid >  0 and pid != null and pid != '' ">
+	AND p2.id = #{pid} AND p2.type = 2
+	</if>
+	<if test="status >  0 and status != null and status != '' ">
+	AND orderstatus.id = #{status}
+	</if>
+	<if test="senderid != null and senderid != ''">
+	AND u1.id = #{senderid}
+	</if>
+	<if test="requesterid != null and requesterid != '' ">
+	AND u2.id = #{requesterid}
+	</if>
+</where>
+</update>
+
+<delete id="deleteOrder" parameterType="vo.Order" flushCache="true">
+
+DELETE FROM `order` WHERE id=#{id};
+
+</delete>
+
+<select id="selectOrder" parameterType="vo.Order"  resultType="vo.Order" flushCache="true" >
+
+SELECT * FROM `order` WHERE id=#{id};
+
+</select>
+<select id="queryOrder" parameterType="vo.Order"  resultType="vo.Order" flushCache="true" >
+
+SELECT id,`status`,requesterid,pid,sourceid,istransfer,valid,wishdate,
+CASE WHEN senddate IS NULL THEN "" ELSE senddate END AS senddate,
+CASE WHEN senderid IS NULL THEN "" ELSE senderid END AS senderid
+FROM `order`
+  <where>
+    <if test="senderid != null and senderid !=''">
+    <bind name="senderid2" value="'%' + senderid + '%'" />
+        AND senderid LIKE #{senderid2}
+    </if>
+    <if test="senddate != null and senddate !=''">
+        AND senddate = #{senddate}
+    </if>
+    <if test="status != 0 and status != null and status != '' ">
+		AND status=#{status}
+	</if>
+	<if test="sourceid != null and sourceid != '' ">
+		AND sourceid=#{sourceid}
+	</if>
+	<if test="pid != 0 and pid != null and pid != '' ">
+		AND pid=#{pid}
+	</if>
+    <if test="id!=null and id!=''">
+        AND id = #{id} 
+    </if>
+    <if test="requesterid != null and requesterid != '' ">
+		AND requesterid=#{requesterid}
+	</if>
+	<if test="wishdate != null and wishdate != '' ">
+		AND wishdate=#{wishdate}
+	</if>
+    <if test="istransfer ==  0 or istransfer==1 and istransfer != null and istransfer != '' ">
+		AND istransfer = #{istransfer}
+	</if>
+	<if test="valid ==  0 or valid == 1 and valid != null and valid != '' ">
+		AND valid = #{valid}
+	</if>
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countOrder" parameterType="vo.Order"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM `order`
+<where>
+    <if test="id != null and id !=''">
+        AND id = #{id}
+    </if>
+    <if test="senderid != null and senderid !=''">
+        AND senderid = #{senderid}
+    </if>
+    <if test="senddate != null and senddate !=''">
+        AND senddate = #{senddate}
+    </if>
+    <if test="status != 0 and status != null and status != '' ">
+		AND status=#{status}
+	</if>
+	<if test="sourceid != null and sourceid != '' ">
+		AND sourceid=#{sourceid},
+	</if>
+	<if test="pid != 0 and pid != null and pid != '' ">
+		AND pid=#{pid}
+	</if>
+    <if test="id!=null and id!=''">
+        AND id = #{id} 
+    </if>
+     <if test="requesterid != null and requesterid != '' ">
+		AND requesterid=#{requesterid}
+	</if>
+	<if test="wishdate != null and wishdate != '' ">
+		AND wishdate=#{wishdate}
+	</if>
+	<if test="istransfer ==  0 or istransfer==1 and istransfer != null and istransfer != '' ">
+		AND istransfer = #{istransfer}
+	</if>
+		<if test="valid ==  0 or valid == 1 and valid != null and valid != '' ">
+		AND valid = #{valid}
+	</if>
+  </where>
+  </select>
+  
+<update id="validateornot" parameterType="vo.Order" flushCache="true">
+UPDATE `order`
+<set>
+	<if test="valid ==  0 or valid == 1 and valid != null and valid != '' ">
+	valid = #{valid},
+	</if>
+</set>
+WHERE id = #{id}
+
+</update>
+
+</mapper>

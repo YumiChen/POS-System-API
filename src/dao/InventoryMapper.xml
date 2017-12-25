@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.InventoryMapper">
+
+<insert id="addInventory" parameterType="vo.Inventory" flushCache="true">
+
+INSERT INTO inventory (pid,iid,difference)
+SELECT place.id, item.id, #{difference}
+FROM place, item
+WHERE place.id =#{pid} AND item.id = #{iid}
+
+</insert>
+
+<update id="modifyInventory" parameterType="vo.Inventory" flushCache="true">
+
+UPDATE inventory
+<set>
+	<if test="difference != null and difference != ''">
+	difference=#{difference},
+	</if>
+</set>
+ WHERE pid=#{pid} and iid=#{iid};
+
+</update>
+
+<delete id="deleteInventory" parameterType="vo.Inventory" flushCache="true">
+
+DELETE FROM inventory  WHERE pid=#{pid} and iid=#{iid};
+
+</delete>
+
+<select id="selectInventory" parameterType="vo.Inventory"  resultType="vo.Inventory" flushCache="true" >
+
+SELECT * FROM inventory  WHERE pid=#{pid} and iid=#{iid};
+
+</select>
+<select id="queryInventory" parameterType="vo.Inventory"  resultType="vo.Inventory" flushCache="true" >
+
+SELECT iid,pid, CASE WHEN difference IS NULL THEN "" ELSE difference END as difference
+FROM inventory
+  <where>
+    <if test="pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="iid != null and iid != ''">
+        AND iid = #{iid} 
+    </if>
+    <if test="difference != null and difference != ''">
+        AND difference = #{difference} 
+    </if>
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countInventory" parameterType="vo.Inventory"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM inventory
+<where>
+    <if test="pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="iid != null and iid != ''">
+        AND iid = #{iid} 
+    </if>
+    <if test="difference != null and difference != ''">
+        AND difference = #{difference} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

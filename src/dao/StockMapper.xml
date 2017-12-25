@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.StockMapper">
+
+<insert id="addStock" parameterType="vo.Stock" flushCache="true">
+
+INSERT INTO stock (iid,pid,num) VALUES (#{iid},#{pid},#{num})
+
+</insert>
+
+<update id="modifyStock" parameterType="vo.Stock" flushCache="true">
+
+UPDATE stock
+<set>
+	<if test="num != null and num != '' and num >= 0">
+        num = #{num},
+    </if>
+</set>
+ WHERE iid=#{iid} AND pid = #{pid};
+
+</update>
+
+<delete id="deleteStock" parameterType="vo.Stock" flushCache="true">
+
+DELETE FROM stock WHERE iid=#{iid} AND pid = #{pid};
+
+</delete>
+
+<select id="selectStock" parameterType="vo.Stock"  resultType="vo.Stock" flushCache="true" >
+
+SELECT * FROM stock WHERE iid=#{iid} AND pid = #{pid};
+
+</select>
+<select id="queryStock" parameterType="vo.Stock"  resultType="vo.Stock" flushCache="true" >
+
+SELECT * FROM stock
+  <where>
+    <if test="iid != null and iid !=''">
+        AND iid = #{iid}
+    </if>
+    <if test="pid > 0 and pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="num >= 0 and num != null and num != ''">
+        AND num = #{num}
+    </if>
+
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countStock" parameterType="vo.Stock"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM stock
+<where>
+    <if test="iid != null and iid !=''">
+        AND iid = #{iid}
+    </if>
+    <if test="pid > 0 and pid != null and pid !=''">
+        AND pid = #{pid}
+    </if>
+    <if test="num >= 0 and num != null and num != ''">
+        AND num = #{num}
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.VehicleMapper">
+
+<insert id="addVehicle" parameterType="vo.Vehicle" flushCache="true">
+
+INSERT INTO vehicle (id,type,menuf,displacement,driver)
+SELECT #{id},#{type},#{menuf},#{displacement},user.id
+FROM user
+WHERE user.id = #{driver}
+</insert>
+
+<update id="modifyVehicle" parameterType="vo.Vehicle" flushCache="true">
+
+UPDATE vehicle
+INNER JOIN user
+ON user.id = vehicle.driver
+<set>
+	<if test="type != null and type != ''">
+	vehicle.type=#{type},
+	</if>
+	<if test="menuf != null and menuf != ''">
+	menuf=#{menuf},
+	</if>
+	<if test="displacement != null and displacement != ''">
+	displacement=#{displacement},
+	</if>
+	<if test="driver != null and driver != '' ">
+	driver= user.id,
+	</if>
+</set>
+<where>
+  vehicle.id=#{id}
+<if test="driver != null and driver != '' ">
+	AND user.id =#{driver}
+	</if>
+</where>
+</update>
+
+
+<delete id="deleteVehicle" parameterType="vo.Vehicle" flushCache="true">
+
+DELETE from vehicle WHERE id=#{id};
+
+</delete>
+
+<select id="selectVehicle" parameterType="vo.Vehicle"  resultType="vo.Vehicle" flushCache="true" >
+
+SELECT * from vehicle WHERE id=#{id};
+
+</select>
+<select id="queryVehicle" parameterType="vo.Vehicle"  resultType="vo.Vehicle" flushCache="true" >
+
+SELECT * from vehicle
+  <where>
+    <if test="type != null and type !=''">
+        AND type = #{type}
+    </if>
+    <if test="displacement != null and displacement !=''">
+        AND displacement = #{displacement}
+    </if>
+    <if test="menuf != null and menuf !=''">
+        AND menuf = #{menuf}
+    </if>
+	<if test="driver != null and driver != ''">
+		AND driver=#{driver}
+	</if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countVehicle" parameterType="vo.Vehicle"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) from vehicle
+<where>
+     <if test="type != null and type !=''">
+        AND type = #{type}
+    </if>
+    <if test="displacement != null and displacement !=''">
+        AND displacement = #{displacement}
+    </if>
+    <if test="menuf != null and menuf !=''">
+        AND menuf = #{menuf}
+    </if>
+	<if test="driver != null and driver != ''">
+		AND driver=#{driver}
+	</if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

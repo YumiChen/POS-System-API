@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.TableMapper">
+<select id="selectTable"  flushCache="true"  resultType="java.util.HashMap" >
+
+SELECT TABLE_NAME AS tableName, COLUMN_NAME AS columnName,DATA_TYPE AS dataType
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = 'POS'
+
+</select>
+<select id="selectTableNames"  flushCache="true"  resultType="java.lang.String" >
+SELECT
+  TABLE_NAME As tableName
+FROM
+  INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = "POS" AND TABLE_TYPE != "VIEW"
+</select>
+
+<select id="selectOneTable"  flushCache="true"  parameterType="java.lang.String" resultType="java.util.HashMap" >
+
+SELECT COLUMN_NAME AS name,DATA_TYPE AS type, COLUMN_KEY AS PK
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = 'POS' AND TABLE_NAME = #{name}
+
+</select>
+
+<select id="getPK"  flushCache="true"  parameterType="java.lang.String" resultType="java.lang.String" >
+
+SELECT DISTINCT column_name as pk
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+INNER JOIN
+    INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
+          ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' AND
+             TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME AND 
+             KU.table_name='inventory'
+
+</select>
+
+</mapper>

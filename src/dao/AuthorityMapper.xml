@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.AuthorityMapper">
+
+<insert id="addAuthority" parameterType="vo.Authority" flushCache="true">
+
+INSERT INTO authority (id,name) 
+VALUES (#{id},#{name})
+
+</insert>
+
+<update id="modifyAuthority" parameterType="vo.Authority" flushCache="true">
+
+UPDATE authority
+<set>
+	<!--if test="id != null">
+	id=#{id},
+	</if>  -->
+	<if test="name != null">
+	name=#{name},
+	</if>
+</set>
+ WHERE id=#{id};
+
+</update>
+
+<delete id="deleteAuthority" parameterType="vo.Authority" flushCache="true">
+
+DELETE FROM authority WHERE id =#{id};
+
+</delete>
+
+<select id="selectAuthority" parameterType="vo.Authority"  resultType="vo.Authority" flushCache="true" >
+
+SELECT * FROM authority WHERE id=#{id};
+
+</select>
+<select id="queryAuthority" parameterType="vo.Authority"  resultType="vo.Authority" flushCache="true" >
+
+SELECT * FROM authority
+  <where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+    <if test="id != 0 and id != null and id != ''">
+        AND id = #{id} 
+    </if>
+
+  </where>
+  		 <if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countAuthority" parameterType="vo.Authority"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM authority
+<where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+        <if test="id != 0 and id != null and id !='' ">
+        AND id = #{id} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

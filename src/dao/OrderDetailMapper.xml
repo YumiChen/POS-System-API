@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.OrderDetailMapper">
+
+<insert id="addOrderDetail" parameterType="vo.OrderDetail" flushCache="true">
+
+INSERT INTO orderdetail (oid,iid,ordnum)
+SELECT order.id, item.id,#{ordnum}
+FROM item, `order`
+WHERE item.id = #{iid} AND order.id = #{oid}
+</insert>
+
+<update id="modifyOrderDetail" parameterType="vo.OrderDetail" flushCache="true">
+
+UPDATE orderdetail
+<set>
+	<if test="ordnum != null and ordnum != '' and ordnum > 0">
+	ordnum=#{ordnum},
+	</if>
+</set>
+ WHERE oid=#{oid} and iid=#{iid};
+
+</update>
+
+<delete id="deleteOrderDetail" parameterType="vo.OrderDetail" flushCache="true">
+
+DELETE FROM orderdetail WHERE oid=#{oid} and iid = #{iid};
+
+</delete>
+
+<select id="selectOrderDetail" parameterType="vo.OrderDetail"  resultType="vo.OrderDetail" flushCache="true" >
+
+SELECT * FROM orderdetail WHERE oid=#{oid} and iid = #{iid};
+
+</select>
+
+<select id="queryOrderDetail" parameterType="vo.OrderDetail"  resultType="vo.OrderDetail" flushCache="true" >
+
+SELECT * FROM orderdetail
+  <where>
+    <if test="oid != null and oid !=''">
+        AND oid = #{oid}
+    </if>
+    <if test="iid != null and iid != '' ">
+		AND iid=#{iid}
+	</if>
+    <if test="ordnum!=null and ordnum!=''">
+        AND ordnum = #{ordnum} 
+    </if>
+
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countOrderDetail" parameterType="vo.OrderDetail"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM orderdetail
+<where>
+    <if test="oid != null and oid !=''">
+        AND oid = #{oid}
+    </if>
+    <if test="iid != null and iid != '' ">
+		AND iid=#{iid}
+	</if>
+    <if test="ordnum!=null and ordnum!=''">
+        AND ordnum = #{ordnum} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

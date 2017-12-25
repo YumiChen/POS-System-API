@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.GetOrdersMapper">
+
+<select id="getOrdersn" parameterType="vo.OrderResult"  resultType="vo.OrderResult" flushCache="true" >
+  SELECT DISTINCT
+    order.id,
+    p2.name AS pid,
+    p1.name AS sourceid,
+    order.wishdate,
+    u1.name as requesterid,
+    CASE WHEN order.senddate IS NULL THEN "" ELSE order.senddate END AS senddate,
+    orderstatus.name AS status,
+    CASE WHEN u2.name IS NULL THEN "" ELSE u2.name END AS senderid,
+    order.istransfer
+    
+    FROM `order`
+  INNER JOIN orderstatus
+  ON orderstatus.id = order.status
+  INNER JOIN user AS u1
+  ON u1.id = order.requesterid
+  INNER JOIN user AS u2
+  ON u2.id = order.senderid
+  INNER JOIN place AS p1
+  ON p1.id = order.sourceid
+  INNER JOIN place AS p2
+  ON p2.id = order.pid
+  <where>
+     order.valid = 1
+        AND order.istransfer = 0
+    <if test="senderid != null and senderid !=''">
+        AND u2.name = #{senderid}
+    </if>
+    <if test="senddate != null and senddate !=''">
+        AND senddate = #{senddate}
+    </if>
+    <if test="status != null and status != '' ">
+              AND orderstatus.name = #{status}
+       </if>
+       <if test="sourceid != null and sourceid != '' ">
+              AND p1.name = #{sourceid}
+       </if>
+       <if test="requesterid != null and requesterid != '' ">
+              AND u1.name =#{requesterid}
+       </if>
+       <if test="wishdate != null and wishdate != '' ">
+              AND order.wishdate=#{wishdate}
+       </if>
+       <if test="pid != null and pid != '' ">
+              AND p2.name= #{pid}
+       </if>
+    <if test="id!=null and id!=''">
+        AND order.id = #{id}
+    </if>
+  
+  </where>
+</select>
+
+
+<select id="getOrderst" parameterType="vo.OrderResult"  resultType="vo.OrderResult" flushCache="true" >
+    SELECT DISTINCT
+    order.id,
+    p2.name AS pid,
+    p1.name AS sourceid,
+    order.wishdate,
+    u1.name as requesterid,
+    CASE WHEN order.senddate IS NULL THEN "" ELSE order.senddate END AS senddate,
+    orderstatus.name AS status,
+    CASE WHEN u2.name IS NULL THEN "" ELSE u2.name END AS senderid,
+    order.istransfer
+    
+    FROM `order`
+  INNER JOIN orderstatus
+  ON orderstatus.id = order.status
+  INNER JOIN user AS u1
+  ON u1.id = order.requesterid
+  INNER JOIN user AS u2
+  ON u2.id = order.senderid
+  INNER JOIN place AS p1
+  ON p1.id = order.sourceid
+  INNER JOIN place AS p2
+  ON p2.id = order.pid
+ 
+  <where>
+     order.valid = 1
+        AND order.istransfer = 1
+    <if test="senderid != null and senderid !=''">
+        AND u2.name = #{senderid}
+    </if>
+    <if test="senddate != null and senddate !=''">
+        AND senddate = #{senddate}
+    </if>
+    <if test="status != null and status != '' ">
+              AND orderstatus.name = #{status}
+       </if>
+       <if test="sourceid != null and sourceid != '' ">
+              AND p1.name = #{sourceid}
+       </if>
+       <if test="requesterid != null and requesterid != '' ">
+              AND u1.name =#{requesterid}
+       </if>
+       <if test="wishdate != null and wishdate != '' ">
+              AND order.wishdate=#{wishdate}
+       </if>
+       <if test="pid != null and pid != '' ">
+              AND p2.name= #{pid}
+       </if>
+    <if test="id!=null and id!=''">
+        AND order.id = #{id}
+    </if>
+       
+  </where>
+</select>
+
+
+<select id="getOrderDetail" parameterType="vo.OrderDetailResult"  resultType="vo.OrderDetailResult" flushCache="true" >
+SELECT orderdetail.oid, item.id as _iid, item.name as iid, orderdetail.ordnum
+FROM orderdetail
+INNER JOIN item
+ON orderdetail.iid = item.id
+INNER JOIN `order`
+ON orderdetail.oid = order.id
+  <where>
+       order.valid = 1
+       <if test="ordnum > 0 and ordnum != null and ordnum != '' ">
+              AND ordnum=#{ordnum}
+       </if>
+    <if test="iid!=null and id!=''">
+        AND iid = #{iid}
+    </if>
+    <if test="oid!=null and oid!=''">
+        AND oid = #{oid}
+    </if>
+  </where>
+</select>
+<!--  
+<select id="countOrder" parameterType="vo.OrderResult"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT DISTINCT count(*)
+FROM stockhouse, `order`, orderstatus, driver, branch, user
+
+  <where>
+  		stockhouse.id = order.sourceid
+		AND branch.id = order.bid
+		AND orderstatus.id = order.status AND driver.id = order.senderid
+		AND order.istransfer = #{istransfer}
+		AND order.valid = 1
+		AND order.requesterid = user.id
+    <if test="senderid != null and senderid !=''">
+        AND senderid = #{senderid}
+    </if>
+    <if test="senddate != null and senddate !=''">
+        AND senddate = #{senddate}
+    </if>
+    <if test="status != null and status != '' ">
+		AND status = #{status}
+	</if>
+	<if test="sourceid != null and sourceid != '' ">
+		AND order.sourceid = #{sourceid},
+	</if>
+	<if test="bid != null and bid != '' ">
+		AND order.bid = #{bid}
+	</if>
+	<if test="requesterid != null and requesterid != '' ">
+		AND requesterid=#{requesterid}
+	</if>
+	<if test="wishdate != null and wishdate != '' ">
+		AND order.wishdate=#{wishdate}
+	</if>
+    <if test="id!=null and id!=''">
+        AND order.id = #{id} 
+    </if>
+  		AND order.valid = 1
+  </where>
+  
+</select>
+-->
+
+<!--  OrderDetails -->
+<!--  
+<select id="getOrderDetail" parameterType="vo.OrderDetailResult"  resultType="vo.OrderDetailResult" flushCache="true" >
+
+SELECT orderdetail.oid, item.id as _iid, item.name as iid, orderdetail.ordnum
+FROM orderdetail
+INNER JOIN item
+ON orderdetail.iid = item.id
+INNER JOIN `order`
+ON orderdetail.oid = order.id
+  <where>
+  	order.valid = 1
+	<if test="ordnum > 0 and ordnum != null and ordnum != '' ">
+		AND ordnum=#{ordnum}
+	</if>
+    <if test="iid!=null and id!=''">
+        AND iid = #{iid} 
+    </if>
+    <if test="oid!=null and oid!=''">
+        AND oid = #{oid} 
+    </if>
+  </where>
+
+</select>-->
+<!--  
+<select id="countOrderDetail" parameterType="vo.OrderDetailResult"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*)
+FROM orderdetail
+INNER JOIN item
+ON orderdetail.iid = item.id
+INNER JOIN `order`
+ON orderdetail.oid = order.id
+  <where>
+	order.valid = 1
+	<if test="ordnum > 0 and ordnum != null and ordnum != '' ">
+		AND ordnum=#{ordnum}
+	</if>
+    <if test="iid!=null and id!=''">
+        AND iid = #{iid} 
+    </if>
+    <if test="oid!=null and oid!=''">
+        AND oid = #{oid} 
+    </if>
+  </where>
+  
+</select>
+-->
+</mapper>

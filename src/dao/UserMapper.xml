@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.UserMapper">
+
+<insert id="addUser" parameterType="vo.User" flushCache="true">
+
+INSERT INTO user (id,name,email,authcode,password,pid,phone) 
+SELECT #{id},#{name},#{email},authority.id,#{password},#{pid},#{phone}
+FROM authority
+WHERE authority.id = #{authcode}
+</insert>
+<!--  
+<update id="modifyUser" parameterType="vo.User" flushCache="true">
+
+UPDATE user
+INNER JOIN place
+ON place.id = user.pid
+INNER JOIN authority
+ON authority.id = user.authcode
+<set>
+	<if test="name != null and name != ''">
+	user.name = #{name},
+	</if>
+	<if test="email != null and email != ''">
+	user.email = #{email},
+	</if>
+	<if test="authcode != null and authcode != '' and authcode > 0">
+	user.authcode = authority.id,
+	</if>
+	<if test="phone != null and phone != ''">
+	user.phone = #{phone},
+	</if>
+	<if test="pid > 0 and pid != null and pid != ''">
+	user.pid = place.id,
+	</if>
+	<if test="password != null and password !=''">
+       user.password = #{password},
+    </if>
+</set>
+<where>
+	user.id = #{id}
+	<if test="pid > 0 and pid != null and pid != ''">
+	 AND place.id = #{pid}
+	</if>
+	<if test="authcode != null and authcode != ''">
+	AND authority.id = #{authcode}
+	</if>
+</where>
+</update>
+-->
+
+<update id="modifyUser" parameterType="vo.User" flushCache="true">
+
+UPDATE user
+<set>
+	<if test="name != null and name != ''">
+	user.name = #{name},
+	</if>
+	<if test="email != null and email != ''">
+	user.email = #{email},
+	</if>
+	<if test="authcode != null and authcode != '' and authcode > 0">
+	user.authcode = #{authcode},
+	</if>
+	<if test="phone != null and phone != ''">
+	user.phone = #{phone},
+	</if>
+	<if test="pid > 0 and pid != null and pid != ''">
+	user.pid = #{pid},
+	</if>
+	<if test="password != null and password !=''">
+       user.password = #{password},
+    </if>
+</set>
+<where>
+	user.id = #{id}
+</where>
+</update>
+
+<delete id="deleteUser" parameterType="vo.User" flushCache="true">
+
+DELETE FROM user WHERE id=#{id};
+
+</delete>
+
+<select id="selectUser" parameterType="vo.User"  resultType="vo.User" flushCache="true" >
+
+SELECT * FROM user WHERE id=#{id};
+
+</select>
+<select id="queryUser" parameterType="vo.User"  resultType="vo.User" flushCache="true" >
+
+SELECT * FROM user
+  <where>
+    <if test="name != null and name !='' ">
+    <bind name="name2" value="'%' + name + '%'" />
+         AND name LIKE #{name2}
+    </if>
+    <if test="email != null and email !=''">
+        AND email = #{email}
+    </if>
+    <if test="authcode != null and authcode > 0 and authcode !=''">
+        AND authcode = #{authcode}
+    </if>
+    <if test="password != null and password !=''">
+        AND password = #{password}
+    </if>
+	<if test="phone != null and phone != '' ">
+		AND phone=#{phone}
+	</if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+    <if test="pid > 0 and pid != null and pid != ''">
+		AND pid=#{pid}
+	</if>
+
+  </where>
+  		<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+			LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countUser" parameterType="vo.User"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM user
+<where>
+    <if test="name != null and name !='' ">
+    <bind name="name2" value="'%' + name + '%'" />
+         AND name LIKE #{name2}
+    </if>
+    <if test="email != null and email !=''">
+        AND email = #{email}
+    </if>
+    <if test="authcode != null and authcode > 0 and authcode !=''">
+        AND authcode = #{authcode}
+    </if>
+    <if test="password != null and password !=''">
+        AND password = #{password}
+    </if>
+	<if test="phone != null and phone != '' ">
+		AND phone=#{phone}
+	</if>
+    <if test="id != null and id != ''">
+        AND id = #{id} 
+    </if>
+    <if test="pid > 0 and pid != null and pid != ''">
+		AND pid=#{pid}
+	</if>
+  </where>
+  
+</select>
+
+</mapper>

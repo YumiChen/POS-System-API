@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.CategoryMapper">
+
+<insert id="addCategory" parameterType="vo.Category" flushCache="true">
+
+INSERT INTO category (id,name) 
+VALUES (#{id},#{name})
+
+</insert>
+
+<update id="modifyCategory" parameterType="vo.Category" flushCache="true">
+
+UPDATE category
+<set>
+	<if test="name != null">
+	name=#{name},
+	</if>
+</set>
+ WHERE id=#{id};
+
+</update>
+
+<delete id="deleteCategory" parameterType="vo.Category" flushCache="true">
+
+DELETE FROM category WHERE id =#{id};
+
+</delete>
+
+<select id="selectCategory" parameterType="vo.Category"  resultType="vo.Category" flushCache="true" >
+
+SELECT * FROM category WHERE id=#{id};
+
+</select>
+<select id="queryCategory" parameterType="vo.Category"  resultType="vo.Category" flushCache="true" >
+
+SELECT * FROM category
+  <where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+    <if test="id != 0 and id != null and id != ''">
+        AND id = #{id} 
+    </if>
+
+  </where>
+  		 <if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">			
+  		 LIMIT #{start},#{rowsperpage}
+		</if>
+</select>
+
+<select id="countCategory" parameterType="vo.Category"  resultType="java.lang.Integer" flushCache="true" >
+
+SELECT count(*) FROM category
+<where>
+    <if test="name != null and name !=''">
+    <bind name="name2" value="'%' + name + '%'" />
+        AND name LIKE #{name2}
+    </if>
+    <if test="id != 0 and id != null and id != ''">
+        AND id = #{id} 
+    </if>
+  </where>
+  
+</select>
+
+</mapper>

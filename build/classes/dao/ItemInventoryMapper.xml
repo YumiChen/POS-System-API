@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ItemInventoryMapper">
+
+<select id="queryItemInventory" parameterType="vo.ItemInventory"  resultType="vo.ItemInventory" flushCache="true" >
+
+SELECT item.id, item.name,
+item.price,
+stock.num as stock,
+place.id as pid
+  
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid
+INNER JOIN place
+ON stock.pid = place.id AND place.id = #{pid} AND place.type != 1
+INNER JOIN inventory
+ON inventory.pid = place.id AND inventory.iid = item.id AND inventory.difference IS NULL
+
+<where>
+	<if test="id != null and id != ''">
+        AND item.id = #{id} 
+    </if>
+</where>
+<if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+    LIMIT #{start},#{rowsperpage}
+</if>
+
+</select>
+<select id="queryInventoryLoss" parameterType="vo.ItemInventory"  resultType="vo.ItemInventory" flushCache="true" >
+SELECT item.id, item.name,
+item.price,
+stock.num as stock,
+stock.num + inventory.difference as inventory,
+place.id as pid
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid
+INNER JOIN place
+ON stock.pid = place.id AND place.type != 1 AND place.id = #{pid}
+INNER JOIN inventory
+ON inventory.pid = place.id AND inventory.iid = item.id AND inventory.difference IS NOT NULL
+  <if test="start != null and start >= 0 and rowsperpage != null and rowsperpage != '' and rowsperpage > 0">
+     LIMIT #{start},#{rowsperpage}
+  </if>
+  <where>
+	<if test="id != null and id != ''">
+        AND item.id = #{id} 
+    </if>
+    </where>
+</select>
+
+<select id="queryInventoryAll" parameterType="vo.ItemInventory"  resultType="vo.ItemInventory" flushCache="true" >
+SELECT item.id, item.name,
+item.price,
+stock.num as stock,
+stock.num + inventory.difference as inventory,
+place.id as pid
+FROM item
+INNER JOIN stock
+ON item.id = stock.iid
+INNER JOIN place
+ON stock.pid = place.id AND place.type != 1 AND place.id = #{pid}
+INNER JOIN inventory
+ON inventory.pid = place.id AND inventory.iid = item.id
+  <if test="start != null and start != '' and rowsperpage != '' and rowsperpage != null and rowsperpage != 0 ">
+     LIMIT #{start},#{rowsperpage}
+  </if>
+  <where>
+	<if test="id != null and id != ''">
+        AND item.id = #{id} 
+    </if>
+    </where>
+</select>
+
+</mapper>
